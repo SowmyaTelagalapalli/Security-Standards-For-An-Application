@@ -1,0 +1,246 @@
+Stratégie de sécurisation d'une application :
+
+Sommaire : 
+
+1. Importance des stratégies de sécurisation d'une application
+2. Menaces et objectifs des attaquants
+3. Rappel des règles d'hygiène
+4. Sécurité des échanges de données 
+5. Journalisation 
+6. Audit
+7. Bug Bounty
+8. Utilisation de TLS
+9. Description et mise en œuvre des mécanismes de sécurité du Web
+10. Protection contre le clickjacking 
+11. Sanitisation
+12. HTTPS
+13. Authentification et Autorisation
+14. Fournir les bonnes permissions
+15. Session
+16. Authentification par jeton
+17. API Stateful et API Stateless
+18. SHA 256 et Salage
+
+1.Importance des stratégies de sécurité pour toute application :
+
+Une interface de programmation d'applications (API) est un intermédiaire logiciel qui permet à vos applications de communiquer entre elles. Elle fournit des routines, des protocoles et des outils aux développeurs qui créent des applications logicielles, tout en permettant l'extraction et le partage de données de manière accessible. La sécurité des sites et applications web est un aspect à prendre en compte dès le début et non à la fin du projet. Il est important de prendre en compte les besoins de sécurité résultant de l'analyse des risques, et de s'assurer qu'ils sont pris en compte tout au long des phases de conception afin de se protéger contre les attaques malveillantes sur internet qui apportent une mauvaise réputation. 
+
+2.Menaces et objectifs des attaquants :
+
+Les menaces les plus connues pour les sites et applications web sont la compromission des ressources, le vol de données et le déni de service.
+
+Compromis de ressources : Les applications sont une violation de l'intégrité du contenu, dont une conséquence peut être la défiguration du site. Une telle attaque vise à modifier le site pour remplacer le contenu légitime par un contenu choisi par l'attaquant. Il s'agit, par exemple, de relayer un message politique, de dénigrer le propriétaire du site ou simplement de revendiquer l'attaque comme une preuve de savoir-faire. Une perte d'intégrité peut également se traduire par la réalisation d'une attaque de type " point d'eau " (water hole), qui tend un piège aux visiteurs.
+
+Vol de données : c'est une attaque qui entraîne la perte de la confidentialité de certaines données (authentifiants, informations personnelles, informations bancaires, etc.) Elle est souvent réalisée dans un but lucratif et se traduit la plupart du temps par une usurpation d'identité ou des paiements frauduleux.
+
+Le déni de service : il vise à rendre le site attaqué indisponible pour ses utilisateurs légitimes, que ce soit en arrêtant ou en ralentissant considérablement le service.
+
+
+Dans tous les cas, l'impact sur le propriétaire du site est évidemment un déficit d'image et un manque à gagner dans le cas d'un site servant de support à une activité commerciale. Dans certains cas, le préjudice peut s'étendre aux utilisateurs du site.
+
+Aperçu des classes d'attaques :
+
+Pour atteindre l'objectif visé, un attaquant exploite généralement une ou plusieurs vulnérabilités du site ou de l'application web. Les moyens techniques utilisés pour mener à bien une attaque peuvent être regroupés en classes en fonction du type de vulnérabilités exploitées. Voici un exemple de classes de vulnérabilités récurrentes :
+
+XSS : Cross side scripting. Injection de code dans le site. Requête client récupère mauvais code, le client est incité à faire des requêtes au nom d'un attaquant. Prévenir avec CSRF Token. Si maitrisé, pas de moyen de faire SQLI, CSRF
+CSRF : Attaque par l'intermédiaire de l'utilisateur. La cible de l'attaque est le serveur. L'attaquant oblige l'utilisateur à faire des actions en son nom sur un site officiel. oblige le navigateur Web d'un utilisateur à effectuer des opérations indésirables, sur un site de confiance où l'utilisateur est actuellement authentifié.
+SQLI : Requête SQL malveillante afin de compromettre les données (accès, modification, suppression). L'injection se fait par l'intermédiaire d'un formulaire non sécurisé.
+Attaque de type "Man-in-the-middle" : Attaque dans laquelle un attaquant se place entre deux parties communicantes (entre le prouveur et le vérificateur dans le contexte de l'authentification) dans le but de
+d'intercepter ou de modifier les informations passant entre les deux parties.
+
+
+3.Rappel des règles d'hygiène :
+
+Défense en profondeur : Chaque partie de l'application doit être sécurisée et entrer dans une politique de défense globale de l'application.
+Réduction de la surface d'attaque : Réduire le nombre de données exposées, les moyens d'accès. Par exemple firewall.  Réseau Système et Application. Réduction de l'exposition des services s'ils ne sont pas indispensables. Complémentaire avec moindre privilège.
+Moindre privilèges : Ce principe vise à n'accorder aux éléments et acteurs du système que les permissions strictement nécessaires à son fonctionnement, afin de limiter les risques de vol, d'altération ou de destruction de données en cas de compromission d'un ou plusieurs éléments.
+
+4.Sécurité des échanges de données :
+
+Il est important de s'assurer que les données soumises ou présentées ne seront pas interceptées ou modifiées pendant leur transit. Si le site ou l'application web présente des données personnelles, ce principe est
+obligatoire en vertu de la loi informatique et libertés du 6 janvier 1978 et du règlement général sur la protection des données (RGPD).
+
+L'objectif est également d'assurer à l'utilisateur que les données transmises ou reçues arrivent ou proviennent effectivement du site consulté et non d'une copie illégitime ou d'un intermédiaire frauduleux.
+
+Le règlement général de protection des données (RGPD) est un texte réglementaire européen qui encadre le traitement des données de manière égalitaire sur tout le territoire de l'Union Européenne. Il est entré en application le 25 mai 2018.
+
+Le RGPD s'inscrit dans la continuité de la Loi française Informatique et Libertés de 1978 établissant des règles sur la collecte et l'utilisation des données sur le territoire français. Il a été conçu autour de 3 objectifs :
+
+    renforcer les droits des personnes
+    responsabiliser les acteurs traitant des données
+    crédibiliser la régulation grâce à une coopération renforcée entre les autorités de protection des données.
+
+
+5.Journalisation :
+
+Les journaux d'événements sont une brique technique essentielle pour gérer la sécurité des systèmes d'information. La journalisation est un moyen de détecter les incidents de sécurité et d'analyser le comportement d'un site ou d'une application.
+d'un site web ou d'une application. 
+
+6.Audit :
+
+Les bonnes pratiques de conception évoquées jusqu'ici doivent s'accompagner de processus de détection des vulnérabilités du site web. La mise en œuvre de ces processus se présente sous la forme d'actions manuelles et automatisées, lors des phases de conception et d'exploitation de l'application web.
+
+
+En plus de l'audit du code et de la configuration de l'application web, les tests d'intrusion peuvent être complétés par la mise en place d'un bug bounty.
+
+7.Bug bounty :
+
+Un programme de bug bounty est une offre proposée par de nombreux sites web, organisations et développeurs de logiciels par laquelle les individus peuvent recevoir une reconnaissance et une compensation pour avoir signalé des bugs, en particulier ceux relatifs à des exploits et des vulnérabilités de sécurité.
+
+
+8.Utilisation de TLS :
+
+Si votre application communique avec un serveur web qui possède un certificat émis par une autorité de certification (CA) connue et de confiance, utilisez une requête HTTPS. Cela empêche les pirates d'intercepter et de lire les transmissions. 
+
+Le protocole SSL (Secure Sockets Layer) - aujourd'hui techniquement connu sous le nom de TLS (Transport Layer Security) - est un élément de base commun pour les communications cryptées entre clients et serveurs. Une utilisation incorrecte de TLS peut permettre à des entités malveillantes d'intercepter les données d'une application sur le réseau. 
+
+Dans un scénario typique d'utilisation de TLS, un serveur est configuré avec un certificat contenant une clé publique et une clé privée correspondante. Dans le cadre de la poignée de main entre un client et un serveur TLS, le serveur prouve qu'il possède la clé privée en signant son certificat à l'aide de la cryptographie à clé publique. Cela permet aux acheteurs en ligne de savoir que le site web est sûr et fiable.
+
+L'utilisation de la requête HTTPS évite les attaques de type "man in middle".
+
+
+9.Description et mise en œuvre des mécanismes de sécurité du Web :
+
+Politique de même origine (SOP) : En général, lorsque deux ressources embarquées proviennent de la même Origine,aucune restriction n'est appliquée. A l'inverse, une stratégie de contrôle sera appliquée dans le cas de communication entre des ressources embarquées d'Origines différentes.
+
+Cross Origin Resource Sharing (CORS) : CORS est une norme qui permet la définition explicite d'un contrat entre le serveur web et le navigateur qui précise les conditions d'acceptation des échanges.
+
+Content Security Policy(CSP) : La CSP permet de définir une stratégie de contrôle d'accès aux ressources accessibles sur un site web donné en appliquant des restrictions sous la forme d'une
+liste d'autorisation (aussi appelée liste blanche).  Ainsi, les ressources (scripts, styles ou images) provenant d'origines non déclarées dans la CSP, mais présentes dans les pages, sont bloquées ou ne sont pas
+exécutées par le navigateur afin d'appliquer le principe du moindre privilège.
+
+La CSP a d'abord été conçue pour réduire la surface d'attaque des attaques de type Cross Site Scripting (XSS), les versions ultérieures de la spécification protègent également contre d'autres formes d'attaques telles que le Click Jacking.
+
+
+Contrôle de l'intégrité des ressources (IRS) : L'organisation du code en fichiers de ressources distincts CSS et JavaScript est encouragée mais cette pratique doit être complétée par l'utilisation d'un mécanisme permettant de garantir l'intégrité des ressources utilisées par le navigateur.
+
+10.Protection contre le clickjacking :
+
+Le clickjacking est un type d'attaque dans lequel une page Web trompeuse incite un utilisateur légitime à cliquer sur un contenu apparemment légitime qui l'amène en fait à effectuer des actions,
+à son insu, sur d'autres sites. Ces attaques sont généralement mises en œuvre à l'aide d'une page piégée comprenant des cadres (iframes) et des cookies qui pointent vers des sites légitimes sur lesquels l'utilisateur trompé s'est connecté.
+l'utilisateur trompé s'est connecté. La protection contre ce type d'attaque consiste à mettre en place des mécanismes qui empêchent le navigateur d'inclure le site à protéger dans un site tiers par le biais d'un iframe.
+
+
+11.Sanitisation :
+
+Un utilisateur peut taper n'importe quoi dans un formulaire de saisie et le soumettre. la valeur de la saisie est un formulaire valide mais du côté du serveur, elle peut être dangereuse. Il peut s'agir d'un code d'échappement malveillant, comme dans le cas de l'injection SQL, qui s'applique à la vérification de la validité d'un champ, où il peut renvoyer une erreur à l'utilisateur.
+
+La désinfection HTML est le processus qui consiste à examiner un document HTML et à produire un nouveau document HTML qui ne conserve que les balises désignées comme "sûres" et souhaitées. La désinfection HTML peut être utilisée pour se protéger contre les attaques XSS (cross-site scripting) en désinfectant tout code HTML soumis par un utilisateur.
+
+
+12.HTTPS :
+
+HTTPS est un protocole de communication internet qui permet une connexion cryptée entre le navigateur et le site web, c'est-à-dire que les échanges ne sont pas en clair.
+
+Cela permet 
+
+    la confidentialité des données : en cas d'écoute ou d'interception du trafic, les données échangées ne peuvent pas être décryptées,
+    l'intégrité des données : les données ne peuvent pas être modifiées "en route" entre leur envoi par le site web et leur affichage sur le navigateur de l'utilisateur,
+    et l'authentification du site web, afin que l'utilisateur puisse vérifier qu'il se trouve bien sur le site où il voulait se rendre. 
+HTTPS protège donc contre les attaques où le trafic est intercepté, modifié (attaque man-in-the-middle, interception de données sensibles...).
+
+	
+13.Authentification et Autorisation :
+
+La sécurisation de votre API contre les attaques évoquées ci-dessus doit s'appuyer sur :
+
+    L'authentification - Déterminer l'identité d'un utilisateur final. Dans une API REST, l'authentification de base peut être mise en œuvre en utilisant le protocole TLS, mais OAuth 2 et OpenID Connect sont des alternatives plus sûres.
+    Autorisation - Détermination des ressources auxquelles un utilisateur identifié peut accéder. Une API doit être construite et testée pour empêcher les utilisateurs d'accéder aux fonctions ou aux opérations de l'API en dehors de leur rôle prédéfini. Par exemple, un client API en lecture seule ne devrait pas être autorisé à accéder à un point de terminaison fournissant une fonctionnalité d'administration.
+
+Ces deux concepts sont complètement orthogonaux et indépendants, mais ils sont tous les deux essentiels à la conception de la sécurité, et l'absence de l'un ou l'autre ouvre la voie à la compromission.
+
+En termes d'applications web, de manière très grossière, l'authentification consiste à vérifier les informations de connexion pour voir si vous reconnaissez un utilisateur comme étant connecté, et l'autorisation consiste à vérifier dans votre contrôle d'accès si vous permettez à l'utilisateur de visualiser, modifier, supprimer ou créer du contenu...
+
+
+14.Fournir les bonnes autorisations :
+
+Stocker les données privées dans le stockage interne :
+
+Stockez toutes les données privées des utilisateurs dans le stockage interne de l'appareil, qui est mis en bac à sable par application. Votre application n'a pas besoin de demander l'autorisation de consulter ces fichiers, et les autres applications ne peuvent pas y accéder. Comme mesure de sécurité supplémentaire, lorsque l'utilisateur désinstalle une application, l'appareil supprime tous les fichiers que l'application a enregistrés dans le stockage interne.
+
+Ne stockez que les données non sensibles dans les fichiers cache :
+
+Maintenez les services et les dépendances à jour
+La plupart des applications utilisent des bibliothèques externes et des informations sur le système de l'appareil pour effectuer des tâches spécialisées. En maintenant à jour les dépendances de votre application, vous sécurisez davantage ces points de communication.
+
+
+15.Session :
+
+Une session est un petit fichier, très probablement au format JSON, qui stocke des informations sur l'utilisateur, comme un identifiant unique, l'heure de connexion et les expirations, etc. Il est généré et stocké sur le serveur afin que ce dernier puisse garder une trace des demandes de l'utilisateur. L'utilisateur reçoit certaines de ces informations, notamment l'ID, sous forme de cookies qui seront envoyés à chaque nouvelle demande, afin que le serveur puisse reconnaître l'ID et autoriser les demandes de l'utilisateur.
+
+Avantages et inconvénients
+
+Comme les sessions sont stockées sur le serveur, ses administrateurs ont le pouvoir sur elles. Par exemple, si une équipe de sécurité soupçonne qu'un compte est compromis, elle peut immédiatement invalider l'ID de session, de sorte que l'utilisateur soit immédiatement déconnecté.  D'autre part, comme une session est stockée sur le serveur, ce dernier est chargé de rechercher l'ID de session que l'utilisateur envoie. Cela peut poser des problèmes d'évolutivité.
+
+16.authentification par jeton :
+
+Un jeton est un fichier d'autorisation qui ne peut pas être altéré. Il est généré par le serveur à l'aide d'une clé secrète, envoyé à l'utilisateur et stocké par celui-ci dans son stockage local. Comme dans le cas des cookies, l'utilisateur envoie ce jeton au serveur à chaque nouvelle demande, afin que le serveur puisse vérifier sa signature et autoriser les demandes. 
+AVANTAGES :
+Les jetons peuvent être utiles lorsque l'utilisateur souhaite réduire le nombre de fois où il doit envoyer son justificatif d'identité.
+CONS :
+Si un hypothétique attaquant parvient à obtenir un jeton valide, il peut avoir un accès illimité aux bases de données du serveur. Si le serveur génère des clés en utilisant des algorithmes plus anciens, ces clés peuvent être violées.
+
+17.API Stateful et API Stateless :
+
+API Stateful :
+
+Stateful sont celles qui peuvent être utilisées de manière répétée, comme la banque en ligne ou le courrier électronique. Elles sont effectuées dans le contexte de transactions antérieures dans lesquelles les états sont stockés, et ce qui s'est passé dans les transactions précédentes peut avoir un impact sur la transaction actuelle.
+
+Avantages du protocole Stateful
+
+    Les protocoles avec état conservent la trace des informations de connexion et, par conséquent, offrent des performances supérieures car ils conservent continuellement la trace des informations.
+    Les protocoles avec état sont plus intuitifs car ils peuvent maintenir les données sur le serveur entre deux requêtes.
+    Ils peuvent améliorer les performances lorsque la récupération des données n'est nécessaire qu'une seule fois.
+
+Inconvénients du protocole Stateful
+
+    Le protocole Stateful nécessite une allocation de mémoire afin de stocker les données.
+    En cas de maintenance inefficace du stockage des sessions, il peut y avoir une baisse des performances. Il nécessite une gestion continue du cycle de vie complet du service.
+    Ces protocoles sont fortement dépendants de l'état du serveur.
+    En général, les protocoles avec état nécessitent un stockage de sauvegarde.
+    Comme l'état est maintenu, les protocoles à état ne sont pas très sûrs.
+
+
+API Stateless :
+
+Un protocole sans état est un protocole dans lequel le récepteur n'est pas tenu de conserver l'état de session des demandes précédentes. 
+Le protocole HTTP (HyperText Transfer Protocol) est un exemple de protocole sans état car chaque demande est exécutée indépendamment des demandes qui l'ont précédée. Cela implique que lorsqu'une transaction est terminée, la connexion entre le navigateur et le serveur est également terminée.
+
+Avantages du protocole Stateless
+
+    Puisque le système de surveillance ne doit pas regarder au-delà d'une seule requête pour en déterminer la nature globale, la visibilité du protocole est améliorée. 
+    Il est plus facile de se remettre d'échecs partiels comme les plantages puisqu'aucun état n'est maintenu, ce qui améliore la fiabilité. 
+    Le serveur n'a pas besoin de stocker l'état de la session entre les requêtes, ce qui améliore l'évolutivité puisque le déploiement des services sur un nombre quelconque de serveurs est possible, et la mise en œuvre est encore plus simplifiée.
+    Il ne nécessite qu'un petit nombre de ressources car le système n'a pas besoin de garder la trace des communications sur de nombreuses lignes, ainsi que des informations de session.
+    Dans les protocoles sans état, chaque communication individuelle n'est pas connectée et est distincte de celles qui la précèdent ou la suivent.
+    Ici, chaque paquet de données voyage seul. Il n'est pas nécessaire de faire référence à un autre paquet dans ces paquets.
+
+Inconvénients du protocole Stateless
+
+    Il peut être indispensable d'inclure des informations supplémentaires dans chaque requête, et le serveur devra donc interpréter ces nouvelles informations.
+    Ils peuvent dégrader les performances du réseau en augmentant la quantité de données répétitives fournies dans une série de requêtes, qui ne peuvent pas être sauvegardées et réutilisées.
+    Ils sont intrinsèquement moins performants car ils ne stockent pas d'informations sur une session d'utilisateur particulière.
+
+
+18.SHA 256 et Salage :
+
+SHA 256 :
+
+SHA-256 signifie Secure Hash Algorithm 256-bit et est utilisé pour la sécurité cryptographique.Les algorithmes de hachage cryptographiques produisent des hachages irréversibles et uniques. Plus le nombre de hachages possibles est grand, plus la probabilité que deux valeurs créent le même hachage est faible.
+
+Salage :
+
+Le salage est une méthode permettant de renforcer la sécurité des informations qui sont destinées à être hachées (par exemple des mots de passe) en y ajoutant une donnée supplémentaire afin d'empêcher que deux informations identiques ne conduisent à la même empreinte (la résultante d'une fonction de hachage). Le but du salage est de lutter contre les attaques par analyse fréquentielle, les attaques utilisant des rainbow tables, les attaques par dictionnaire et les attaques par force brute. Pour ces deux dernières attaques, le salage est efficace quand le sel utilisé n'est pas connu de l'attaquant ou lorsque l'attaque vise un nombre important de données hachées toutes salées différemment. 
+
+Dans le cas du salage dynamique, chaque enregistrement de la table des mots de passe du système d'authentification contient les informations suivantes
+
+nom d'utilisateur | hash(mot de passe + salage) | salage 
+
+
+Sources :
+anssi-guide-recommandations_mise_en_oeuvre_site_web_maitriser_standards_securite_cote_navigateur-v2.0.pdf
+anssi-guide-authentification_multifacteur_et_mots_de_passe.pdf
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
+https://www.vaadata.com/blog/fr/comment-securiser-un-site-web/
+
+
